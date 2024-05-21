@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitchenwares Products", "Kitchenwares Products\Kitchenwares Products.csproj", "{4F6EEC1F-318B-40E2-92FB-3F6E6826EC89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitchenwares Products Test", "Kitchenwares Products Test\Kitchenwares Products Test.csproj", "{CDEE130B-EF3E-4AF3-A865-F2B4892110AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F6EEC1F-318B-40E2-92FB-3F6E6826EC89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6EEC1F-318B-40E2-92FB-3F6E6826EC89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F6EEC1F-318B-40E2-92FB-3F6E6826EC89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6EEC1F-318B-40E2-92FB-3F6E6826EC89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDEE130B-EF3E-4AF3-A865-F2B4892110AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDEE130B-EF3E-4AF3-A865-F2B4892110AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDEE130B-EF3E-4AF3-A865-F2B4892110AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDEE130B-EF3E-4AF3-A865-F2B4892110AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

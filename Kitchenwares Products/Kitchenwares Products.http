@@ -1,0 +1,6 @@
+@Kitchenwares_Products_HostAddress = http://localhost:5236
+
+GET {{Kitchenwares_Products_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
