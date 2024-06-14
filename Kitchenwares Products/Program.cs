@@ -3,6 +3,7 @@ using Kitchenwares_Products.Models;
 using Kitchenwares_Products.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,5 +56,11 @@ app.UseCors(policyBuilder => policyBuilder
 );
 
 app.MapControllers();
+
+app.UseMetricServer();
+app.UseHttpMetrics(options=>
+{
+    options.AddCustomLabel("host", context => context.Request.Host.Host);
+});
 
 app.Run();
