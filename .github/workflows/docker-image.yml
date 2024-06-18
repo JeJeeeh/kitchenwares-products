@@ -61,4 +61,4 @@ jobs:
           password: ${{ secrets.KUBE_VM_PASSWORD }}
           port: 22
           script: |
-            kubectl rollout restart deployment products-service -n ${{ secrets.KUBE_NAMESPACE }}
+            ./restart_products_deployment.sh
