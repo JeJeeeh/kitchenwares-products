@@ -1,0 +1,77 @@
+﻿name: Staging CI
+
+on:
+  pull_request: 
+    branches: ['staging']
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Connect to VPN
+        run: |
+          sudo apt-get update
+          sudo /sbin/modprobe tun
+          sudo apt-get install openconnect
+          printf 'Netlab Fontys ICT\n${{ secrets.VPN_USERNAME }}\n${{ secrets.VPN_PASSWORD }}\n' | sudo openconnect vpnnetlab.fhict.nl -b
+      
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%d-%m-%Y')"
+
+      - name: Execute SSH Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.KUBE_VM_IP }}
+          username: ${{ secrets.KUBE_VM_USER }}
+          password: ${{ secrets.KUBE_VM_PASSWORD }}
+          port: 22
+          script: |
+            artillery run --output testResult.json --variables '{"baseUrl":"${{ secrets.BASE_URL }}", "date":"${{ steps.date.outputs.date }}", "prometheusUrl":"${{ secrets.PROMETHEUS_URL }}"}' Artillery-Load-Tests-Get-Endpoints.yml
+          
+            p99=$(jq '.aggregate.summaries["http.response_time"].p99 // 0' artillery_report.json)
+            http_401=$(jq '.aggregate.counters["http.codes.401"] // 0' artillery_report.json)
+            http_403=$(jq '.aggregate.counters["http.codes.403"] // 0' artillery_report.json)
+            errors=$(jq '[.aggregate.counters | to_entries[] | select(.key | startswith("errors.")) | .value] | add // 0' artillery_report.json)
+            
+            echo "p99 value is $p99"
+            echo "401 errors: $http_401"
+            echo "403 errors: $http_403"
+            echo "Total errors: $errors"
+  
+            if (( $(echo "$p99 > 400" | bc -l) )); then
+            echo "p99 value is higher than 400. Failing the workflow."
+            exit 1
+            fi
+            if (( $http_401 > 0 )); then
+            echo "HTTP 401 errors found. Failing the workflow."
+            exit 1
+            fi
+            if (( $http_403 > 0 )); then
+            echo "HTTP 403 errors found. Failing the workflow."
+            exit 1
+            fi
+            if (( $errors > 0 )); then
+            echo "Errors found (e.g., ETIMEDOUT). Failing the workflow."
+            exit 1
+            fi
+  
+            echo "All checks passed."
+      
+  deploy-image-to-docker:
+    runs-on: ubuntu-latest
+    needs: load-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Build and push docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products:latest "./Kitchenwares Products"
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.ACCESS_TOKEN }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products:latest
+          
+        

@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Development CI
 
 on:
   pull_request:
@@ -49,13 +49,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and Push User Service Docker image
+      - name: Build and push docker image
         env:
           APP_UID: 1000
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products:latest "./Kitchenwares Products"
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products-staging:latest "./Kitchenwares Products"
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.ACCESS_TOKEN }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/kitchenwares-products-staging:latest
     
   deploy-image-to-netlab:
     runs-on: ubuntu-latest
