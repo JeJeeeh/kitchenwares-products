@@ -1,0 +1,19 @@
+﻿config:
+  target: '{{ baseUrl }}'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+      name: 10 to 100 Load Test
+  plugins:
+    publish-metrics:
+      - type: prometheus
+        pushgateway: '{{ prometheusUrl }}'
+        tags:
+          - 'testId:{{ date }}'
+  scenarios:
+    - flow:
+        - loop:
+            - get:
+                url: "/products"
+          count: 10
