@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.KUBE_VM_PASSWORD }}
           port: 22
           script: |
-            artillery run --output testResult.json --variables '{"baseUrl":"${{ secrets.BASE_URL }}", "date":"${{ steps.date.outputs.date }}", "prometheusUrl":"${{ secrets.PROMETHEUS_URL }}"}' Artillery-Load-Tests-Get-Endpoints.yml
+            artillery run --output testResult.json --variables '{"baseUrl":"${{ secrets.BASE_URL }}", "date":"${{ steps.date.outputs.date }}", "prometheusUrl":"${{ secrets.PROMETHEUS_URL }}"}' products-test-plan.yml
           
             p99=$(jq '.aggregate.summaries["http.response_time"].p99 // 0' artillery_report.json)
             http_401=$(jq '.aggregate.counters["http.codes.401"] // 0' artillery_report.json)
