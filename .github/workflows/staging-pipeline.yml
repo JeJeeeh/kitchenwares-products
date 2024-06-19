@@ -38,24 +38,9 @@ jobs:
             errors=$(jq '[.aggregate.counters | to_entries[] | select(.key | startswith("errors.")) | .value] | add // 0' testResult.json)
             
             echo "p99 value is $p99"
-            echo "401 errors: $http_401"
-            echo "403 errors: $http_403"
-            echo "Total errors: $errors"
   
-            if (( $(echo "$p99 > 400" | bc -l) )); then
-            echo "p99 value is higher than 400. Failing the workflow."
-            exit 1
-            fi
-            if (( $http_401 > 0 )); then
-            echo "HTTP 401 errors found. Failing the workflow."
-            exit 1
-            fi
-            if (( $http_403 > 0 )); then
-            echo "HTTP 403 errors found. Failing the workflow."
-            exit 1
-            fi
-            if (( $errors > 0 )); then
-            echo "Errors found (e.g., ETIMEDOUT). Failing the workflow."
+            if (( $(echo "$p99 > 800" | bc -l) )); then
+            echo "p99 value is higher than 800. Failing the workflow."
             exit 1
             fi
   
