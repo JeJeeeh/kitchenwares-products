@@ -63,4 +63,5 @@ app.UseHttpMetrics(options=>
     options.AddCustomLabel("host", context => context.Request.Host.Host);
 });
 
+// run the app
 app.Run();

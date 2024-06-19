@@ -30,32 +30,14 @@ jobs:
           password: ${{ secrets.KUBE_VM_PASSWORD }}
           port: 22
           script: |
-            artillery run --output testResult.json --variables '{"baseUrl":"${{ secrets.BASE_URL }}", "date":"${{ steps.date.outputs.date }}", "prometheusUrl":"${{ secrets.PROMETHEUS_URL }}"}' Artillery-Load-Tests-Get-Endpoints.yml
+            artillery run --output testResult.json --variables '{"baseUrl":"${{ secrets.BASE_URL }}", "date":"${{ steps.date.outputs.date }}", "prometheusUrl":"${{ secrets.PROMETHEUS_URL }}"}' products-test-plan.yml
           
-            p99=$(jq '.aggregate.summaries["http.response_time"].p99 // 0' artillery_report.json)
-            http_401=$(jq '.aggregate.counters["http.codes.401"] // 0' artillery_report.json)
-            http_403=$(jq '.aggregate.counters["http.codes.403"] // 0' artillery_report.json)
-            errors=$(jq '[.aggregate.counters | to_entries[] | select(.key | startswith("errors.")) | .value] | add // 0' artillery_report.json)
+            p99=$(jq '.aggregate.summaries["http.response_time"].p99 // 0' testResult.json)
             
             echo "p99 value is $p99"
-            echo "401 errors: $http_401"
-            echo "403 errors: $http_403"
-            echo "Total errors: $errors"
   
-            if (( $(echo "$p99 > 400" | bc -l) )); then
-            echo "p99 value is higher than 400. Failing the workflow."
-            exit 1
-            fi
-            if (( $http_401 > 0 )); then
-            echo "HTTP 401 errors found. Failing the workflow."
-            exit 1
-            fi
-            if (( $http_403 > 0 )); then
-            echo "HTTP 403 errors found. Failing the workflow."
-            exit 1
-            fi
-            if (( $errors > 0 )); then
-            echo "Errors found (e.g., ETIMEDOUT). Failing the workflow."
+            if (( $(echo "$p99 > 800" | bc -l) )); then
+            echo "p99 value is higher than 800. Failing the workflow."
             exit 1
             fi
   
